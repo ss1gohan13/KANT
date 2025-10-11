@@ -88,12 +88,7 @@ All macros are customizable through the configuration interface.
 
 ```
 KANT/
-├── kant.sh              # Main menu script
-├── lib/
-│   ├── utils.sh         # General utility functions
-│   ├── mcu_utils.sh     # MCU and CAN configuration
-│   ├── stepper_utils.sh # Stepper configuration
-│   └── macro_utils.sh   # Macro installation and configuration
+├── installer.sh         # Main installer and menu script
 ├── README.md
 └── LICENSE
 ```
