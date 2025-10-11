@@ -3,7 +3,7 @@
 set -e
 
 # Script Info
-# Last Updated: 2025-01-14 00:27:26 UTC
+# Last Updated: 2025-10-11 03:24:08 UTC
 # Author: ss1gohan13
 
 KLIPPER_CONFIG="${HOME}/printer_data/config"
@@ -293,6 +293,7 @@ restore_backup() {
         fi
     fi
 }
+
 # Function to install web interface configuration
 install_web_interface_config() {
     local printer_cfg="${KLIPPER_CONFIG}/printer.cfg"
@@ -361,7 +362,7 @@ install_kamp() {
     cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg "${KLIPPER_CONFIG}/KAMP_Settings.cfg"
     echo -e "${GREEN}KAMP installation complete!${NC}"
     
-    # ADD THIS LINE: Automatically add firmware retraction after KAMP installation
+    # Automatically add firmware retraction after KAMP installation
     echo "Adding firmware retraction configuration..."
     add_firmware_retraction_to_printer_cfg
 }
@@ -417,70 +418,6 @@ unretract_speed: 60
         mv "$working_cfg" "$printer_cfg"
         echo -e "${GREEN}Appended firmware retraction to end of printer.cfg${NC}"
     fi
-}
-
-# Function to add extruder settings to printer.cfg
-add_extruder_settings_to_printer_cfg() {
-    local printer_cfg="${KLIPPER_CONFIG}/printer.cfg"
-    local working_cfg="${BACKUP_DIR}/printer.cfg.extruder_settings_${CURRENT_DATE}"
-
-    if [ ! -f "$printer_cfg" ]; then
-        echo -e "${YELLOW}[WARNING] printer.cfg not found at ${printer_cfg}${NC}"
-        echo "You will need to manually add the extruder settings to your printer.cfg"
-        return
-    fi
-
-    cp "$printer_cfg" "$working_cfg"
-    echo "Created backup of printer.cfg at ${working_cfg}"
-
-    # Check if extruder section exists
-    if ! grep -q '^\[extruder\]' "$working_cfg"; then
-        echo -e "${YELLOW}[WARNING] No [extruder] section found in printer.cfg${NC}"
-        echo "You will need to manually add the extruder settings to your printer.cfg"
-        rm "$working_cfg"
-        return
-    fi
-
-    # Check if max_extrude_cross_section already exists
-    if grep -q '^max_extrude_cross_section:' "$working_cfg"; then
-        echo -e "${GREEN}Extruder settings already exist. Skipping addition.${NC}"
-        rm "$working_cfg"
-        return
-    fi
-
-    # Add the three extruder settings at the end of the [extruder] section
-    awk '
-        /^\[extruder\]/ { 
-            extruder_section = 1
-            print
-            next
-        }
-        /^\[/ && extruder_section {
-            # We found the start of the next section, add our settings before it
-            print "max_extrude_cross_section: 10"
-            print "max_extrude_only_distance: 500"
-            print "max_extrude_only_velocity: 120"
-            print ""
-            extruder_section = 0
-            print
-            next
-        }
-        { print }
-        END {
-            # If we never found another section after [extruder], add settings at the end
-            if (extruder_section) {
-                print "max_extrude_cross_section: 10"
-                print "max_extrude_only_distance: 500"
-                print "max_extrude_only_velocity: 120"
-            }
-        }
-    ' "$working_cfg" > "${working_cfg}.new"
-    
-    mv "${working_cfg}.new" "$printer_cfg"
-    echo -e "${GREEN}Added extruder settings to printer.cfg${NC}"
-    echo "Added: max_extrude_cross_section: 10"
-    echo "Added: max_extrude_only_distance: 500"
-    echo "Added: max_extrude_only_velocity: 120"
 }
 
 # Function to configure Eddy NG Tap in the start print macro and GANTRY_LEVELING macro
@@ -623,9 +560,9 @@ install_numpy_for_adxl() {
 
 show_header() {
     clear
-    echo -e "${CYAN}======================================================${NC}"
-    echo -e "${CYAN}    SV08 Replacement Macros Installer v${VERSION}${NC}"
-    echo -e "${CYAN}======================================================${NC}"
+    echo -e "${CYAN}==============================================================================${NC}"
+    echo -e "${CYAN}    Klipper Assistant Configuration and Troubleshooting (KANT) v${VERSION}${NC}"
+    echo -e "${CYAN}==============================================================================${NC}"
     echo -e "${YELLOW}Author: ss1gohan13${NC}"
     echo -e "${YELLOW}Last Updated: 2025-10-11${NC}"
     echo ""
@@ -634,7 +571,7 @@ show_header() {
 show_main_menu() {
     show_header
     echo -e "${BLUE}MAIN MENU${NC}"
-    echo "1) Install SV08 Replacement Macros"
+    echo "1) Install Klipper Macros"
     echo "2) Hardware Configuration Utilities"
     echo "3) Additional Features & Extensions"
     echo "4) Backup Management"
@@ -661,10 +598,10 @@ show_main_menu() {
 # Revised menu structure for macros installation
 install_core_macros_menu() {
     show_header
-    echo -e "${BLUE}INSTALL SV08 REPLACEMENT MACROS${NC}"
+    echo -e "${BLUE}INSTALL KLIPPER MACROS${NC}"
     echo "Select which macros to install:"
     echo ""
-    echo "1) Install standard SV08 macros"
+    echo "1) Install standard Klipper macros"
     echo "2) Install A Better Print_Start Macro"
     echo "3) Install A Better End Print Macro"
     echo "0) Back to main menu"
@@ -682,9 +619,8 @@ install_core_macros_menu() {
             check_and_update_printer_cfg
             install_web_interface_config
             add_force_move
-            add_extruder_settings_to_printer_cfg
             start_klipper
-            echo -e "${GREEN}Standard SV08 macros installed successfully!${NC}"
+            echo -e "${GREEN}Standard Klipper macros installed successfully!${NC}"
             read -p "Press Enter to continue..." dummy
             show_main_menu
             ;;
@@ -754,6 +690,8 @@ additional_features_menu() {
     echo "5) Install Numpy for ADXL Resonance Measurements"
     echo "6) Install Crowsnest (webcam streaming)"
     echo "7) Install Moonraker-Timelapse"
+    echo "8) PID Tuning Assistant"
+    echo "9) E-Steps Calibration Helper"
     echo "0) Back to main menu"
     echo ""
     read -p "Select an option: " feature_choice
@@ -814,144 +752,195 @@ additional_features_menu() {
             read -p "Press Enter to continue..." dummy
             additional_features_menu
             ;;
+        8) pid_tuning_assistant ;;
+        9) esteps_calibration_helper ;;
         0) show_main_menu ;;
         *) echo -e "${RED}Invalid option${NC}"; sleep 2; additional_features_menu ;;
     esac
 }
 
-# Software management menu
+# Updated Software management menu with plugin support
 software_management_menu() {
     show_header
     echo -e "${BLUE}SOFTWARE MANAGEMENT${NC}"
-    echo "1) Install Kiauh"
-    echo "2) Update SV08 macros"
-    echo "3) Check for system updates"
+    echo "1) Core Software"
+    echo "2) LED & Visual Effects"
+    echo "3) Input Shaping & Analysis"
+    echo "4) Driver & Hardware Tuning"
+    echo "5) Touchscreen Interface"
+    echo "6) Probe Systems"
+    echo "7) Calibration Tools"
     echo "0) Back to main menu"
     echo ""
     read -p "Select an option: " sw_choice
     
     case $sw_choice in
-        1) install_kiauh ;;
-        2) update_macros ;;
-        3) check_system_updates ;;
+        1) core_software_menu ;;
+        2) led_effects_menu ;;
+        3) input_shaping_menu ;;
+        4) hardware_tuning_menu ;;
+        5) touchscreen_menu ;;
+        6) probe_systems_menu ;;
+        7) calibration_tools_menu ;;
         0) show_main_menu ;;
         *) echo -e "${RED}Invalid option${NC}"; sleep 2; software_management_menu ;;
     esac
 }
 
-# Function to install Kiauh
-install_kiauh() {
+# Core software menu (existing functionality)
+core_software_menu() {
     show_header
-    echo -e "${BLUE}INSTALL KIAUH${NC}"
-    echo "Kiauh is the Klipper Installation And Update Helper"
+    echo -e "${BLUE}CORE SOFTWARE MANAGEMENT${NC}"
+    echo "1) Install Kiauh"
+    echo "2) Update Klipper macros"
+    echo "3) Check for system updates"
+    echo "0) Back to software menu"
     echo ""
+    read -p "Select an option: " core_choice
     
-    if [ -d "${HOME}/kiauh" ]; then
-        echo "Kiauh is already installed."
-        echo "1) Launch Kiauh"
-        echo "2) Update Kiauh"
-        echo "0) Back to software menu"
-        
-        read -p "Select option: " kiauh_option
-        
-        case $kiauh_option in
-            1)
-                cd ~/kiauh
-                ./kiauh.sh
-                ;;
-            2)
-                cd ~/kiauh
-                git pull
-                echo -e "${GREEN}Kiauh updated successfully!${NC}"
-                ;;
-            0)
-                software_management_menu
-                return
-                ;;
-            *)
-                echo -e "${RED}Invalid option${NC}"
-                ;;
-        esac
-    else
-        echo "Installing Kiauh..."
-        cd ~
-        git clone https://github.com/th33xitus/kiauh.git
-        
-        if [ -d "${HOME}/kiauh" ]; then
-            echo -e "${GREEN}Kiauh installed successfully!${NC}"
-            echo "Would you like to launch Kiauh now?"
-            read -p "(y/N): " launch_kiauh
-            
-            if [[ "$launch_kiauh" =~ ^[Yy]$ ]]; then
-                cd ~/kiauh
-                ./kiauh.sh
-            fi
-        else
-            echo -e "${RED}Failed to install Kiauh. Please check your internet connection.${NC}"
-        fi
-    fi
-    
-    read -p "Press Enter to continue..." dummy
-    software_management_menu
+    case $core_choice in
+        1) install_kiauh ;;
+        2) update_macros ;;
+        3) check_system_updates ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; core_software_menu ;;
+    esac
 }
 
-update_macros() {
+# LED Effects menu
+led_effects_menu() {
     show_header
-    echo -e "${BLUE}UPDATE SV08 MACROS${NC}"
+    echo -e "${BLUE}LED & VISUAL EFFECTS${NC}"
+    echo "1) Install Klipper LED Effects"
+    echo "2) Uninstall Klipper LED Effects"
+    echo "3) Check LED Effects status"
+    echo "0) Back to software menu"
+    echo ""
+    read -p "Select an option: " led_choice
     
-    echo "This will update your SV08 macros to the latest version."
-    echo "Your current macros will be backed up first."
-    
-    read -p "Continue with update? (y/N): " confirm_update
-    
-    if [[ "$confirm_update" =~ ^[Yy]$ ]]; then
-        check_klipper
-        create_backup_dir
-        stop_klipper
-        backup_existing_macros
-        install_macros
-        start_klipper
-        
-        echo -e "${GREEN}SV08 macros updated successfully!${NC}"
-    else
-        echo "Update cancelled."
-    fi
-    
-    read -p "Press Enter to continue..." dummy
-    software_management_menu
+    case $led_choice in
+        1) install_led_effects ;;
+        2) uninstall_led_effects ;;
+        3) check_led_effects_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; led_effects_menu ;;
+    esac
 }
 
-check_system_updates() {
+# Input Shaping menu
+input_shaping_menu() {
     show_header
-    echo -e "${BLUE}CHECK FOR SYSTEM UPDATES${NC}"
-    
-    echo "Checking for system updates..."
-    sudo apt update
-    
-    echo -e "\n${CYAN}Available Updates:${NC}"
-    apt list --upgradable
-    
+    echo -e "${BLUE}INPUT SHAPING & ANALYSIS${NC}"
+    echo "1) Install Shake&Tune"
+    echo "2) Uninstall Shake&Tune"
+    echo "3) Check Shake&Tune status"
+    echo "0) Back to software menu"
     echo ""
-    read -p "Would you like to install available updates? (y/N): " install_updates
+    read -p "Select an option: " shake_choice
     
-    if [[ "$install_updates" =~ ^[Yy]$ ]]; then
-        echo "Installing updates... This may take a while."
-        sudo apt upgrade -y
-        echo -e "${GREEN}System updates complete!${NC}"
-    else
-        echo "Update installation cancelled."
-    fi
+    case $shake_choice in
+        1) install_shake_tune ;;
+        2) uninstall_shake_tune ;;
+        3) check_shake_tune_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; input_shaping_menu ;;
+    esac
+}
+
+# Hardware Tuning menu
+hardware_tuning_menu() {
+    show_header
+    echo -e "${BLUE}DRIVER & HARDWARE TUNING${NC}"
+    echo "1) Install TMC Autotune"
+    echo "2) Uninstall TMC Autotune"
+    echo "3) Check TMC Autotune status"
+    echo "0) Back to software menu"
+    echo ""
+    read -p "Select an option: " tmc_choice
     
-    read -p "Press Enter to continue..." dummy
-    software_management_menu
+    case $tmc_choice in
+        1) install_tmc_autotune ;;
+        2) uninstall_tmc_autotune ;;
+        3) check_tmc_autotune_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; hardware_tuning_menu ;;
+    esac
+}
+
+# Touchscreen menu
+touchscreen_menu() {
+    show_header
+    echo -e "${BLUE}TOUCHSCREEN INTERFACE${NC}"
+    echo "1) Install KlipperScreen"
+    echo "2) Uninstall KlipperScreen"
+    echo "3) Check KlipperScreen status"
+    echo "0) Back to software menu"
+    echo ""
+    read -p "Select an option: " screen_choice
+    
+    case $screen_choice in
+        1) install_klipperscreen ;;
+        2) uninstall_klipperscreen ;;
+        3) check_klipperscreen_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; touchscreen_menu ;;
+    esac
+}
+
+# Probe Systems menu
+probe_systems_menu() {
+    show_header
+    echo -e "${BLUE}PROBE SYSTEMS${NC}"
+    echo "1) Install Beacon"
+    echo "2) Uninstall Beacon"
+    echo "3) Install Cartographer"
+    echo "4) Uninstall Cartographer"
+    echo "5) Install Eddy-NG"
+    echo "6) Uninstall Eddy-NG"
+    echo "7) Check all probe systems status"
+    echo "0) Back to software menu"
+    echo ""
+    read -p "Select an option: " probe_choice
+    
+    case $probe_choice in
+        1) install_beacon ;;
+        2) uninstall_beacon ;;
+        3) install_cartographer ;;
+        4) uninstall_cartographer ;;
+        5) install_eddy_ng ;;
+        6) uninstall_eddy_ng ;;
+        7) check_probe_systems_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; probe_systems_menu ;;
+    esac
+}
+
+# Calibration Tools menu
+calibration_tools_menu() {
+    show_header
+    echo -e "${BLUE}CALIBRATION TOOLS${NC}"
+    echo "1) Install Auto Z Calibration"
+    echo "2) Uninstall Auto Z Calibration"
+    echo "3) Check Auto Z Calibration status"
+    echo "0) Back to software menu"
+    echo ""
+    read -p "Select an option: " cal_choice
+    
+    case $cal_choice in
+        1) install_auto_z_calibration ;;
+        2) uninstall_auto_z_calibration ;;
+        3) check_auto_z_calibration_status ;;
+        0) software_management_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; calibration_tools_menu ;;
+    esac
 }
 
 # Uninstall menu
 uninstall_menu() {
     show_header
-    echo -e "${RED}UNINSTALL SV08 MACROS${NC}"
+    echo -e "${RED}UNINSTALL KLIPPER MACROS${NC}"
     
-    echo "This will remove the SV08 replacement macros and restore your previous configuration."
+    echo "This will remove the Klipper macros and restore your previous configuration."
     echo "Are you sure you want to uninstall?"
     
     read -p "Type 'YES' to confirm: " confirm
@@ -985,7 +974,7 @@ configure_stepper_drivers() {
         echo "2) Y Stepper" 
         echo "3) Z Stepper"
         echo "4) E Stepper (Extruder)"
-        echo "5) Return to main menu"
+        echo "5) Return to hardware menu"
         echo ""
         read -p "Enter your choice (1-5): " stepper_choice
         
@@ -1281,31 +1270,176 @@ configure_axis_stepper() {
     echo "5. Test negative travel if configured"
 }
 
-# Function to configure extruder stepper
+# ENHANCED: Function to configure extruder stepper (includes all extruder settings)
 configure_extruder_stepper() {
-    echo -e "${CYAN}=== Configuring Extruder Stepper ===${NC}"
+    local printer_cfg="${KLIPPER_CONFIG}/printer.cfg"
+    local working_cfg="${BACKUP_DIR}/printer.cfg.extruder_${CURRENT_DATE}"
     
-    # Similar structure but with extruder-specific parameters
-    # Include all the extruder parameters you specified
-    
-    # Ask about PID tuning
+    echo -e "${CYAN}=== Configuring Extruder System ===${NC}"
+    echo "This will configure your complete extruder system including:"
+    echo "• Stepper motor settings"
+    echo "• Temperature limits and safety settings"
+    echo "• Pressure advance configuration"
+    echo "• TMC driver settings"
     echo ""
-    read -p "Would you like to run PID tuning for the hotend? (y/N): " do_pid
-    if [[ "$do_pid" =~ ^[Yy]$ ]]; then
-        read -p "Enter target temperature for PID tuning (default 200): " pid_temp
-        pid_temp=${pid_temp:-200}
-        
-        echo -e "${YELLOW}Starting PID calibration at ${pid_temp}°C...${NC}"
-        echo "This process will take several minutes. Please wait..."
-        echo "The hotend will heat up and oscillate around the target temperature."
-        
-        # Execute PID calibration (this would need to be sent to the printer)
-        echo "PID_CALIBRATE HEATER=extruder TARGET=${pid_temp}"
-        echo "After completion, use SAVE_CONFIG to save the results."
+    
+    # Create backup
+    if [ ! -f "$printer_cfg" ]; then
+        echo -e "${RED}[ERROR] printer.cfg not found at ${printer_cfg}${NC}"
+        return
     fi
+    
+    cp "$printer_cfg" "$working_cfg"
+    echo "Created backup at ${working_cfg}"
+    
+    # Collect stepper parameters
+    echo -e "${YELLOW}Enter extruder stepper parameters:${NC}"
+    read -p "step_pin: " step_pin
+    read -p "dir_pin: " dir_pin
+    read -p "enable_pin: " enable_pin
+    read -p "microsteps [16]: " microsteps
+    microsteps=${microsteps:-16}
+    read -p "rotation_distance [22.6789511]: " rotation_distance
+    rotation_distance=${rotation_distance:-22.6789511}
+    
+    # Temperature settings
+    echo ""
+    echo -e "${YELLOW}Temperature and physical settings:${NC}"
+    read -p "nozzle_diameter [0.4]: " nozzle_diameter
+    nozzle_diameter=${nozzle_diameter:-0.4}
+    read -p "filament_diameter [1.75]: " filament_diameter
+    filament_diameter=${filament_diameter:-1.75}
+    read -p "max_temp [300]: " max_temp
+    max_temp=${max_temp:-300}
+    read -p "min_temp [0]: " min_temp
+    min_temp=${min_temp:-0}
+    read -p "min_extrude_temp [170]: " min_extrude_temp
+    min_extrude_temp=${min_extrude_temp:-170}
+    
+    # Safety limits (consolidated from removed add_extruder_settings function)
+    echo ""
+    echo -e "${YELLOW}Safety limits:${NC}"
+    read -p "max_extrude_cross_section [10]: " max_cross_section
+    max_cross_section=${max_cross_section:-10}
+    read -p "max_extrude_only_distance [500]: " max_distance
+    max_distance=${max_distance:-500}
+    read -p "max_extrude_only_velocity [120]: " max_velocity
+    max_velocity=${max_velocity:-120}
+    
+    # Pressure advance
+    echo ""
+    echo -e "${YELLOW}Pressure advance (leave blank to skip):${NC}"
+    read -p "pressure_advance [0.0]: " pressure_advance
+    pressure_advance=${pressure_advance:-0.0}
+    read -p "pressure_advance_smooth_time [0.040]: " pa_smooth_time
+    pa_smooth_time=${pa_smooth_time:-0.040}
+    
+    # TMC settings
+    echo ""
+    echo -e "${YELLOW}TMC2209 settings:${NC}"
+    read -p "uart_pin: " uart_pin
+    read -p "run_current [0.8]: " run_current
+    run_current=${run_current:-0.8}
+    read -p "stealthchop_threshold [999999]: " stealthchop_threshold
+    stealthchop_threshold=${stealthchop_threshold:-999999}
+    
+    # Create extruder configuration block
+    local extruder_config="[extruder]
+step_pin: ${step_pin}
+dir_pin: ${dir_pin}
+enable_pin: ${enable_pin}
+microsteps: ${microsteps}
+rotation_distance: ${rotation_distance}
+nozzle_diameter: ${nozzle_diameter}
+filament_diameter: ${filament_diameter}
+heater_pin: # CONFIGURE MANUALLY
+sensor_type: # CONFIGURE MANUALLY  
+sensor_pin: # CONFIGURE MANUALLY
+#control: pid
+#pid_Kp: # RUN PID TUNING
+#pid_Ki: # RUN PID TUNING  
+#pid_Kd: # RUN PID TUNING
+min_temp: ${min_temp}
+max_temp: ${max_temp}
+min_extrude_temp: ${min_extrude_temp}
+max_extrude_cross_section: ${max_cross_section}
+max_extrude_only_distance: ${max_distance}
+max_extrude_only_velocity: ${max_velocity}"
+
+    if [ "$pressure_advance" != "0.0" ]; then
+        extruder_config+="\npressure_advance: ${pressure_advance}"
+        extruder_config+="\npressure_advance_smooth_time: ${pa_smooth_time}"
+    fi
+    
+    local tmc_config="[tmc2209 extruder]
+uart_pin: ${uart_pin}
+run_current: ${run_current}
+stealthchop_threshold: ${stealthchop_threshold}
+interpolate: true
+sense_resistor: 0.110"
+    
+    # Apply configurations using AWK (similar to axis steppers)
+    awk -v extruder_config="$extruder_config" -v tmc_config="$tmc_config" '
+    BEGIN { 
+        in_extruder = 0
+        in_tmc = 0
+        extruder_replaced = 0
+        tmc_replaced = 0
+    }
+    
+    /^\[extruder\]/ {
+        print extruder_config
+        extruder_replaced = 1
+        in_extruder = 1
+        next
+    }
+    
+    /^\[tmc2209 extruder\]/ {
+        print tmc_config
+        tmc_replaced = 1
+        in_tmc = 1
+        next
+    }
+    
+    /^\[/ && (in_extruder || in_tmc) {
+        in_extruder = 0
+        in_tmc = 0
+        print
+        next
+    }
+    
+    in_extruder || in_tmc { next }
+    
+    { print }
+    
+    END {
+        if (!extruder_replaced) {
+            print extruder_config
+        }
+        if (!tmc_replaced) {
+            print tmc_config  
+        }
+    }
+    ' "$working_cfg" > "${working_cfg}.new"
+    
+    mv "${working_cfg}.new" "$printer_cfg"
+    
+    echo -e "${GREEN}Extruder system configured successfully!${NC}"
+    echo ""
+    echo -e "${CYAN}=== Manual Configuration Required ===${NC}"
+    echo "You still need to configure manually in printer.cfg:"
+    echo "• heater_pin: (hotend heater pin)"
+    echo "• sensor_type: (thermistor type)"
+    echo "• sensor_pin: (thermistor pin)"
+    echo ""
+    echo -e "${CYAN}=== Next Steps ===${NC}"
+    echo "1. Configure heater and sensor pins manually"
+    echo "2. Run PID tuning from 'Additional Features' menu"
+    echo "3. Run E-steps calibration from 'Additional Features' menu"
+    echo "4. Test extrusion at different temperatures"
 }
 
-# NEW: Hardware configuration menu
+# Hardware configuration menu (reorganized - removed add_extruder_settings)
 hardware_config_menu() {
     show_header
     echo -e "${BLUE}HARDWARE CONFIGURATION UTILITIES${NC}"
@@ -1314,8 +1448,7 @@ hardware_config_menu() {
     echo "3) Enable Eddy NG tap start print function"
     echo "4) Configure firmware retraction"
     echo "5) Configure force_move"
-    echo "6) Add extruder settings"
-    echo "7) Configure stepper drivers"
+    echo "6) Configure stepper drivers"
     echo "0) Back to main menu"
     echo ""
     read -p "Select an option: " hw_choice
@@ -1326,8 +1459,7 @@ hardware_config_menu() {
         3) configure_eddy_ng_tap; hardware_config_menu ;;
         4) add_firmware_retraction_to_printer_cfg; hardware_config_menu ;;
         5) add_force_move; hardware_config_menu ;;
-        6) add_extruder_settings_to_printer_cfg; hardware_config_menu ;;
-        7) configure_stepper_drivers; hardware_config_menu ;;
+        6) configure_stepper_drivers; hardware_config_menu ;;
         0) show_main_menu ;;
         *) echo -e "${RED}Invalid option${NC}"; sleep 2; hardware_config_menu ;;
     esac
@@ -2030,6 +2162,75 @@ run_full_diagnostics() {
     echo -e "\n${GREEN}Diagnostics complete!${NC}"
     read -p "Press Enter to continue..." dummy
     diagnostics_menu
+}
+
+# PID Tuning Assistant
+pid_tuning_assistant() {
+    show_header
+    echo -e "${BLUE}PID TUNING ASSISTANT${NC}"
+    echo "This will help you tune your hotend PID values."
+    echo ""
+    
+    read -p "Enter target temperature for PID tuning (default 200): " pid_temp
+    pid_temp=${pid_temp:-200}
+    
+    echo -e "${YELLOW}Starting PID calibration at ${pid_temp}°C...${NC}"
+    echo "This process will take several minutes. Please wait..."
+    echo "The hotend will heat up and oscillate around the target temperature."
+    echo ""
+    echo "Run this command in your printer console:"
+    echo -e "${CYAN}PID_CALIBRATE HEATER=extruder TARGET=${pid_temp}${NC}"
+    echo ""
+    echo "After completion, run:"
+    echo -e "${CYAN}SAVE_CONFIG${NC}"
+    
+    read -p "Press Enter to continue..." dummy
+    additional_features_menu
+}
+
+# E-Steps Calibration Helper
+esteps_calibration_helper() {
+    show_header
+    echo -e "${BLUE}E-STEPS CALIBRATION HELPER${NC}"
+    echo "This will help you calibrate your extruder steps per mm."
+    echo ""
+    
+    echo -e "${CYAN}=== E-Steps Calibration Process ===${NC}"
+    echo "1. Heat your hotend to printing temperature"
+    echo "2. Mark filament 120mm from extruder entry"
+    echo "3. Extrude exactly 100mm of filament"
+    echo "4. Measure remaining distance to mark"
+    echo "5. Calculate new e-steps value"
+    echo ""
+    
+    echo "Commands to run in printer console:"
+    echo -e "${CYAN}M104 S200${NC}  # Heat hotend"
+    echo -e "${CYAN}M109 S200${NC}  # Wait for temperature"
+    echo -e "${CYAN}G91${NC}       # Relative positioning"
+    echo -e "${CYAN}G1 E100 F100${NC}  # Extrude 100mm slowly"
+    echo ""
+    
+    read -p "Enter measured distance remaining to mark (mm): " remaining_distance
+    if [[ "$remaining_distance" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+        actual_extruded=$(echo "120 - $remaining_distance" | bc -l)
+        read -p "Enter current e-steps value (from M503 command): " current_esteps
+        
+        if [[ "$current_esteps" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+            new_esteps=$(echo "scale=2; $current_esteps * 100 / $actual_extruded" | bc -l)
+            echo ""
+            echo -e "${GREEN}=== Calibration Results ===${NC}"
+            echo "Actual filament extruded: ${actual_extruded}mm"
+            echo "Current e-steps: ${current_esteps}"
+            echo "New e-steps: ${new_esteps}"
+            echo ""
+            echo "Commands to set new e-steps:"
+            echo -e "${CYAN}M92 E${new_esteps}${NC}"
+            echo -e "${CYAN}M500${NC}  # Save to EEPROM"
+        fi
+    fi
+    
+    read -p "Press Enter to continue..." dummy
+    additional_features_menu
 }
 
 # MAIN EXECUTION
