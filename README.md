@@ -15,21 +15,10 @@ A comprehensive utility to assist with Klipper 3D printer configuration and setu
 
 1. Clone the repository:
 ```bash
-cd ~
 git clone https://github.com/ss1gohan13/KANT.git
 cd KANT
+./installer.sh
 ```
-
-2. Make the script executable:
-```bash
-chmod +x kant.sh
-```
-
-3. Run KANT:
-```bash
-./kant.sh
-```
-
 ## Usage
 
 ### Main Menu
