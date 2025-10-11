@@ -1,0 +1,18 @@
+# Backup files
+*.backup
+*.bak
+*~
+
+# Temporary files
+*.tmp
+*.swp
+.DS_Store
+
+# Test directories
+test_config/
+test_output/
+
+# Editor files
+.vscode/
+.idea/
+*.sublime-*
