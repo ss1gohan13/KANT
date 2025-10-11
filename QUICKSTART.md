@@ -2,11 +2,7 @@
 
 ## Installation
 
-```bash
-curl -s https://raw.githubusercontent.com/ss1gohan13/KANT/main/install.sh | bash
-```
-
-Or manually:
+### Recommended (Secure) Method
 
 ```bash
 cd ~
@@ -14,6 +10,19 @@ git clone https://github.com/ss1gohan13/KANT.git
 cd KANT
 chmod +x kant.sh
 ./kant.sh
+```
+
+### Alternative: Using Install Script
+
+**Warning**: Only run installation scripts from sources you trust.
+
+```bash
+# Download and inspect the script first
+curl -o /tmp/kant-install.sh https://raw.githubusercontent.com/ss1gohan13/KANT/main/install.sh
+less /tmp/kant-install.sh
+
+# If you trust it, run it
+bash /tmp/kant-install.sh
 ```
 
 ## First-Time Setup Workflow
