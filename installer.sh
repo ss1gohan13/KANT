@@ -16,6 +16,15 @@ VERSION="1.3.0"
 # Default to menu mode - menu will show by default
 MENU_MODE=1
 
+REPO_URL="https://github.com/ss1gohan13/KANT"
+
+# Function to check for updates (for Moonraker integration)
+check_for_updates() {
+    echo "Checking for KANT updates..."
+    echo "Current version: $VERSION"
+    echo "Repository: $REPO_URL"
+}
+
 # Color codes for better readability
 RED='\033[0;31m'
 GREEN='\033[0;32m'
