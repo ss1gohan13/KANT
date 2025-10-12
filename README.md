@@ -1,8 +1,10 @@
-# KANT - Klipper Assistant Navigation and Troubleshooting
+# KANT - Klipper Assistant Navigation and Troubleshooting (WIP)
 
 "You can't? KANT can"
 
 A comprehensive utility to assist with Klipper 3D printer configuration and setup. KANT provides an interactive menu-driven interface to help you configure your printer quickly and correctly.
+
+Please keep in mind this is work in progress. Please make sure to post issues. 
 
 ## Version 1.3.0
 
