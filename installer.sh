@@ -1824,7 +1824,7 @@ browse_official_configs() {
     esac
 }
 
-# Function to list official configurations
+# Function to list official configurations with pagination
 list_official_configs() {
     show_header
     echo -e "${BLUE}AVAILABLE KLIPPER CONFIGURATIONS${NC}"
@@ -1839,24 +1839,11 @@ list_official_configs() {
         return
     fi
     
-    # Test basic connectivity first
-    echo "Testing GitHub connectivity..."
-    if curl -s --connect-timeout 10 "https://github.com" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ GitHub is reachable${NC}"
-    else
-        echo -e "${RED}✗ Cannot reach GitHub${NC}"
-        read -p "Press Enter to continue..." dummy
-        browse_official_configs
-        return
-    fi
-    
-    # Fetch configurations with verbose error handling
-    echo "Fetching config list from GitHub API..."
+    # Fetch configurations from GitHub API
     local api_response
     local http_code
-    
-    # Use a temporary file to capture both response and HTTP code
     local temp_file="/tmp/klipper_configs_$$"
+    
     http_code=$(curl -s -w "%{http_code}" -o "$temp_file" \
         "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
     
@@ -1865,100 +1852,267 @@ list_official_configs() {
         rm -f "$temp_file"
     fi
     
-    echo "HTTP Response Code: $http_code"
-    echo "Response Length: ${#api_response} characters"
-    
-    if [ "$http_code" != "200" ]; then
-        echo -e "${RED}Error: GitHub API returned HTTP $http_code${NC}"
-        if [ -n "$api_response" ]; then
-            echo "Response: ${api_response:0:200}..."
-        fi
+    if [ "$http_code" != "200" ] || [ -z "$api_response" ]; then
+        echo -e "${RED}Error: Could not fetch configurations from GitHub${NC}"
+        echo "Please check your internet connection or try again later."
         echo ""
-        echo -e "${CYAN}Alternative: Browse configs manually at:${NC}"
-        echo "https://github.com/Klipper3d/klipper/tree/master/config"
+        echo -e "${CYAN}Browse manually at: https://github.com/Klipper3d/klipper/tree/master/config${NC}"
         read -p "Press Enter to continue..." dummy
         browse_official_configs
         return
     fi
     
-    if [ -z "$api_response" ]; then
-        echo -e "${RED}Error: Empty response from GitHub API${NC}"
+    # Build array of config files
+    local configs=()
+    
+    while IFS= read -r line; do
+        if [[ "$line" == *'"name":'* && "$line" == *'.cfg"'* ]]; then
+            filename=$(echo "$line" | sed 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            if [[ "$filename" == *.cfg ]]; then
+                configs+=("$filename")
+            fi
+        fi
+    done <<< "$api_response"
+    
+    # Fallback parsing if first method fails
+    if [ ${#configs[@]} -eq 0 ]; then
+        while IFS= read -r filename; do
+            if [[ -n "$filename" && "$filename" == *.cfg ]]; then
+                configs+=("$filename")
+            fi
+        done < <(echo "$api_response" | grep -oE '"name"[[:space:]]*:[[:space:]]*"[^"]*\.cfg"' | cut -d'"' -f4)
+    fi
+    
+    if [ ${#configs[@]} -eq 0 ]; then
+        echo -e "${YELLOW}No .cfg files found.${NC}"
         read -p "Press Enter to continue..." dummy
         browse_official_configs
         return
     fi
     
-    # Show first 300 characters for debugging
-    echo ""
-    echo -e "${YELLOW}Debug - First part of response:${NC}"
-    echo "${api_response:0:300}..."
-    echo ""
+    # Sort the configs array
+    IFS=$'\n' configs=($(sort <<<"${configs[*]}"))
+    unset IFS
     
-    # Parse JSON without jq - extract .cfg filenames
-    echo "Available printer configurations:"
-    echo ""
+    # Pagination variables
+    local page_size=15
+    local current_page=0
+    local total_pages=$(( (${#configs[@]} + page_size - 1) / page_size ))
     
-    local count=1
-    local found_configs=0
-    
-    # Try multiple parsing methods
-    echo -e "${CYAN}Method 1: Direct grep${NC}"
-    echo "$api_response" | grep -o '"name":"[^"]*\.cfg"' | head -5
-    
-    echo -e "${CYAN}Method 2: sed extraction${NC}"
-    echo "$api_response" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\.cfg\)".*/\1/p' | head -5
-    
-    echo ""
-    read -p "Press Enter to continue..." dummy
-    browse_official_configs
+    while true; do
+        show_header
+        echo -e "${BLUE}AVAILABLE KLIPPER CONFIGURATIONS${NC}"
+        echo "Found ${#configs[@]} configuration files"
+        echo "Page $((current_page + 1)) of $total_pages"
+        echo ""
+        
+        # Calculate range for current page
+        local start_idx=$((current_page * page_size))
+        local end_idx=$((start_idx + page_size - 1))
+        if [ $end_idx -ge ${#configs[@]} ]; then
+            end_idx=$((${#configs[@]} - 1))
+        fi
+        
+        # Display current page
+        for i in $(seq $start_idx $end_idx); do
+            echo "$((i + 1))) ${configs[$i]}"
+        done
+        
+        echo ""
+        echo -e "${CYAN}Navigation:${NC}"
+        if [ $current_page -gt 0 ]; then
+            echo "p) Previous page"
+        fi
+        if [ $current_page -lt $((total_pages - 1)) ]; then
+            echo "n) Next page"
+        fi
+        echo "s) Search for specific config"
+        echo "0) Back to config menu"
+        echo ""
+        
+        read -p "Select option: " nav_choice
+        
+        case $nav_choice in
+            p|P)
+                if [ $current_page -gt 0 ]; then
+                    current_page=$((current_page - 1))
+                else
+                    echo -e "${YELLOW}Already at first page${NC}"
+                    sleep 1
+                fi
+                ;;
+            n|N)
+                if [ $current_page -lt $((total_pages - 1)) ]; then
+                    current_page=$((current_page + 1))
+                else
+                    echo -e "${YELLOW}Already at last page${NC}"
+                    sleep 1
+                fi
+                ;;
+            s|S)
+                echo ""
+                read -p "Enter search term (partial filename): " search_term
+                if [ -n "$search_term" ]; then
+                    echo ""
+                    echo -e "${CYAN}Matching configurations:${NC}"
+                    local found=0
+                    for i in "${!configs[@]}"; do
+                        if [[ "${configs[$i]}" == *"$search_term"* ]]; then
+                            echo "$((i + 1))) ${configs[$i]}"
+                            found=1
+                        fi
+                    done
+                    if [ $found -eq 0 ]; then
+                        echo "No configurations found matching '$search_term'"
+                    fi
+                    echo ""
+                    read -p "Press Enter to continue..." dummy
+                fi
+                ;;
+            0)
+                browse_official_configs
+                return
+                ;;
+            *)
+                echo -e "${YELLOW}Invalid option. Use p/n for navigation, s for search, or 0 to exit.${NC}"
+                sleep 2
+                ;;
+        esac
+    done
 }
 
 # Function to download official configuration
 download_official_config() {
     show_header
     echo -e "${BLUE}DOWNLOAD KLIPPER CONFIGURATION${NC}"
-    echo "Enter the exact filename of the configuration you want to download"
-    echo "Example: printer-creality-ender3-v2-2020.cfg"
     echo ""
     
-    read -p "Configuration filename: " config_filename
+    # Fetch the list first for numbered selection
+    local api_response
+    local http_code
+    local temp_file="/tmp/klipper_configs_$$"
     
-    if [ -z "$config_filename" ]; then
-        echo -e "${RED}No filename provided${NC}"
+    echo "Fetching available configurations..."
+    http_code=$(curl -s -w "%{http_code}" -o "$temp_file" \
+        "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
+    
+    if [ -f "$temp_file" ]; then
+        api_response=$(cat "$temp_file")
+        rm -f "$temp_file"
+    fi
+    
+    if [ "$http_code" != "200" ] || [ -z "$api_response" ]; then
+        echo -e "${RED}Error: Could not fetch configurations from GitHub${NC}"
         read -p "Press Enter to continue..." dummy
         browse_official_configs
         return
     fi
     
-    # Add .cfg extension if not provided
-    if [[ "$config_filename" != *.cfg ]]; then
-        config_filename="${config_filename}.cfg"
+    # Build array of config files using improved parsing
+    local configs=()
+    
+    # Same parsing logic as list function
+    while IFS= read -r line; do
+        if [[ "$line" == *'"name":'* && "$line" == *'.cfg"'* ]]; then
+            filename=$(echo "$line" | sed 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+            if [[ "$filename" == *.cfg ]]; then
+                configs+=("$filename")
+            fi
+        fi
+    done <<< "$api_response"
+    
+    # Fallback parsing if first method fails
+    if [ ${#configs[@]} -eq 0 ]; then
+        while IFS= read -r filename; do
+            if [[ -n "$filename" && "$filename" == *.cfg ]]; then
+                configs+=("$filename")
+            fi
+        done < <(echo "$api_response" | grep -oE '"name"[[:space:]]*:[[:space:]]*"[^"]*\.cfg"' | cut -d'"' -f4)
     fi
     
-    echo "Downloading $config_filename..."
+    if [ ${#configs[@]} -eq 0 ]; then
+        echo -e "${YELLOW}No configurations available for download${NC}"
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
     
-    # Download the file
-    local download_url="https://raw.githubusercontent.com/Klipper3d/klipper/master/config/$config_filename"
-    local target_file="${KLIPPER_CONFIG}/$config_filename"
+    # Sort the configs array
+    IFS=$'\n' configs=($(sort <<<"${configs[*]}"))
+    unset IFS
     
-    # Backup existing file if it exists
+    # Show numbered list
+    echo "Available configurations:"
+    echo ""
+    for i in "${!configs[@]}"; do
+        echo "$((i+1))) ${configs[$i]}"
+    done
+    echo "0) Cancel"
+    echo ""
+    
+    read -p "Select configuration number (0-${#configs[@]}): " selection
+    
+    if [ "$selection" -eq 0 ] 2>/dev/null; then
+        browse_official_configs
+        return
+    fi
+    
+    if [[ ! "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 1 ] || [ "$selection" -gt ${#configs[@]} ]; then
+        echo -e "${RED}Invalid selection${NC}"
+        read -p "Press Enter to continue..." dummy
+        download_official_config
+        return
+    fi
+    
+    local source_filename="${configs[$((selection-1))]}"
+    local target_file="${KLIPPER_CONFIG}/printer.cfg"
+    
+    echo ""
+    echo "Selected: $source_filename"
+    echo "This will be downloaded and renamed to printer.cfg"
+    echo ""
+    
+    # Backup existing printer.cfg if it exists
     if [ -f "$target_file" ]; then
-        echo "Backing up existing $config_filename..."
-        cp "$target_file" "${BACKUP_DIR}/${config_filename}.backup_${CURRENT_DATE}"
+        echo -e "${YELLOW}Existing printer.cfg found - creating backup...${NC}"
+        cp "$target_file" "${BACKUP_DIR}/printer.cfg.backup_${CURRENT_DATE}"
+        echo "Backup created: ${BACKUP_DIR}/printer.cfg.backup_${CURRENT_DATE}"
+        echo ""
     fi
     
-    # Download the file
+    echo "Downloading $source_filename..."
+    
+    # Download the file directly as printer.cfg
+    local download_url="https://raw.githubusercontent.com/Klipper3d/klipper/master/config/$source_filename"
+    
     if curl -s -f "$download_url" -o "$target_file"; then
-        echo -e "${GREEN}Successfully downloaded $config_filename to ${KLIPPER_CONFIG}/${NC}"
+        echo -e "${GREEN}Successfully downloaded and saved as printer.cfg${NC}"
+        echo ""
+        echo -e "${CYAN}Download Summary:${NC}"
+        echo "• Source: $source_filename (from Klipper repository)"
+        echo "• Saved as: ${KLIPPER_CONFIG}/printer.cfg"
+        if [ -f "${BACKUP_DIR}/printer.cfg.backup_${CURRENT_DATE}" ]; then
+            echo "• Previous printer.cfg backed up to: backup/printer.cfg.backup_${CURRENT_DATE}"
+        fi
         echo ""
         echo -e "${CYAN}Next Steps:${NC}"
-        echo "1. Review the downloaded configuration file"
-        echo "2. Add [include $config_filename] to your printer.cfg if needed"
-        echo "3. Modify settings to match your specific hardware"
-        echo "4. Restart Klipper service when ready"
+        echo "1. Review the downloaded printer.cfg file"
+        echo "2. Modify settings to match your specific hardware"
+        echo "3. Add any additional includes you need"
+        echo "4. Restart Klipper service to load the new configuration"
+        echo ""
+        
+        read -p "Would you like to restart Klipper now? (y/N): " restart_choice
+        if [[ "$restart_choice" =~ ^[Yy]$ ]]; then
+            echo "Restarting Klipper service..."
+            sudo systemctl restart $KLIPPER_SERVICE_NAME
+            echo -e "${GREEN}Klipper service restarted!${NC}"
+        else
+            echo -e "${YELLOW}Remember to restart Klipper when you're ready to use the new configuration.${NC}"
+        fi
     else
-        echo -e "${RED}Error: Could not download $config_filename${NC}"
-        echo "Please check the filename and try again."
+        echo -e "${RED}Error: Could not download $source_filename${NC}"
+        echo "Please check your internet connection and try again."
     fi
     
     read -p "Press Enter to continue..." dummy
