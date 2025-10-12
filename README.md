@@ -317,6 +317,10 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Changelog
 
+### **Version 1.3.0**
+- ##Public release
+- gramical/spelling corrections/updates on github
+
 ### **Version 1.2.0**
 - Complete interactive menu system
 - Enhanced hardware configuration tools
