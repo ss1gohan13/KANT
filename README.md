@@ -8,6 +8,7 @@ A comprehensive utility to assist with Klipper 3D printer configuration and setu
 
 - 🔧 **MCU ID Management** - Automatically detect and configure MCU serial IDs
 - 🚌 **CAN Bus Support** - Scan for and configure CAN bus devices
+- 📝 **Baseline Printer Configuration** - Install essential print macros with customizable parameters
 - ⚙️ **Stepper Configuration** - Easy configuration of stepper motor pins for all axes
 - 📝 **Baseline Macros** - Install essential print macros with customizable parameters
 - 🎯 **Start/End Print Macros** - Customizable start and end print sequences
