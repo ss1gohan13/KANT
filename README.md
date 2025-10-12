@@ -120,7 +120,7 @@ When you run `./installer.sh`, you'll see the main menu:
 
 ```
 ===============================================================================
-    Klipper Assistant Navigation and Troubleshooting (KANT) v1.2.0
+    Klipper Assistant Navigation and Troubleshooting (KANT) v1.3.0
 ===============================================================================
 
 MAIN MENU
