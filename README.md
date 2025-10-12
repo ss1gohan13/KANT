@@ -1,4 +1,4 @@
-# KANT - Klipper Assistant for New Toolheads
+# KANT - Klipper Assistant Navigation and Troubleshooting
 
 A comprehensive utility to assist with Klipper 3D printer configuration and setup. KANT provides an interactive menu-driven interface to help you configure your printer quickly and correctly.
 
