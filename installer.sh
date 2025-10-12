@@ -1831,7 +1831,7 @@ list_official_configs() {
     echo "Fetching latest configurations from GitHub..."
     echo ""
     
-    # Check if curl and jq are available
+    # Check if curl is available
     if ! command -v curl &> /dev/null; then
         echo -e "${RED}Error: curl is required but not installed${NC}"
         read -p "Press Enter to continue..." dummy
@@ -1839,7 +1839,7 @@ list_official_configs() {
         return
     fi
     
-    # Fetch and display configurations
+    # Fetch and display configurations using pure bash (no jq required)
     local api_response=$(curl -s "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
     
     if [ -z "$api_response" ]; then
@@ -1850,17 +1850,36 @@ list_official_configs() {
         return
     fi
     
-    # Parse and display .cfg files
+    # Debug: Show raw response (temporary - remove after testing)
+    echo -e "${YELLOW}Debug - Raw API response length: ${#api_response} characters${NC}"
+    
+    # Parse JSON without jq - extract .cfg filenames
     echo "Available printer configurations:"
     echo ""
     
     local count=1
-    while read -r filename; do
-        if [[ "$filename" == *.cfg ]]; then
-            echo "$count) $filename"
-            count=$((count+1))
+    local found_configs=0
+    
+    # Extract filenames using grep and sed
+    while read -r line; do
+        if [[ "$line" == *".cfg"* ]]; then
+            # Extract just the filename between quotes
+            filename=$(echo "$line" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\.cfg\)".*/\1/p')
+            if [ -n "$filename" ]; then
+                echo "$count) $filename"
+                count=$((count+1))
+                found_configs=1
+            fi
         fi
-    done < <(echo "$api_response" | grep -o '"name":"[^"]*"' | cut -d'"' -f4 | sort)
+    done <<< "$api_response"
+    
+    if [ $found_configs -eq 0 ]; then
+        echo -e "${YELLOW}No .cfg files found in the response.${NC}"
+        echo "This might be a temporary GitHub API issue."
+        echo ""
+        echo -e "${CYAN}Alternative: You can browse configs manually at:${NC}"
+        echo "https://github.com/Klipper3d/klipper/tree/master/config"
+    fi
     
     echo ""
     read -p "Press Enter to continue..." dummy
