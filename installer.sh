@@ -561,7 +561,7 @@ install_numpy_for_adxl() {
 show_header() {
     clear
     echo -e "${CYAN}==============================================================================${NC}"
-    echo -e "${CYAN}    Klipper Assistant Configuration and Troubleshooting (KANT) v${VERSION}${NC}"
+    echo -e "${CYAN}    Klipper Assistant Navigation and Troubleshooting (KANT) v${VERSION}${NC}"
     echo -e "${CYAN}==============================================================================${NC}"
     echo -e "${YELLOW}Author: ss1gohan13${NC}"
     echo -e "${YELLOW}Last Updated: 2025-10-11${NC}"
