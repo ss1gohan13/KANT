@@ -3,7 +3,7 @@
 set -e
 
 # Script Info
-# Last Updated: 2025-10-11 03:24:08 UTC
+# Last Updated: 2025-10-12 13:38:28 UTC
 # Author: ss1gohan13
 
 KLIPPER_CONFIG="${HOME}/printer_data/config"
@@ -1445,10 +1445,11 @@ hardware_config_menu() {
     echo -e "${BLUE}HARDWARE CONFIGURATION UTILITIES${NC}"
     echo "1) Check MCU IDs"
     echo "2) Check CAN bus devices"
-    echo "3) Enable Eddy NG tap start print function"
-    echo "4) Configure firmware retraction"
-    echo "5) Configure force_move"
-    echo "6) Configure stepper drivers"
+    echo "3) Browse Official Klipper Configurations"
+    echo "4) Enable Eddy NG tap start print function"
+    echo "5) Configure firmware retraction"
+    echo "6) Configure force_move"
+    echo "7) Configure stepper drivers"
     echo "0) Back to main menu"
     echo ""
     read -p "Select an option: " hw_choice
@@ -1456,10 +1457,11 @@ hardware_config_menu() {
     case $hw_choice in
         1) check_mcu_ids ;;
         2) check_can_bus ;;
-        3) configure_eddy_ng_tap; hardware_config_menu ;;
-        4) add_firmware_retraction_to_printer_cfg; hardware_config_menu ;;
-        5) add_force_move; hardware_config_menu ;;
-        6) configure_stepper_drivers; hardware_config_menu ;;
+        3) browse_official_configs ;;
+        4) configure_eddy_ng_tap; hardware_config_menu ;;
+        5) add_firmware_retraction_to_printer_cfg; hardware_config_menu ;;
+        6) add_force_move; hardware_config_menu ;;
+        7) configure_stepper_drivers; hardware_config_menu ;;
         0) show_main_menu ;;
         *) echo -e "${RED}Invalid option${NC}"; sleep 2; hardware_config_menu ;;
     esac
@@ -1798,6 +1800,123 @@ check_can_bus() {
     
     read -p "Press Enter to continue..." dummy
     hardware_config_menu
+}
+
+# Function to browse and download official Klipper configurations
+browse_official_configs() {
+    show_header
+    echo -e "${BLUE}OFFICIAL KLIPPER CONFIGURATIONS${NC}"
+    echo "Browse and download official Klipper example configurations"
+    echo "These are maintained by the Klipper project and updated regularly."
+    echo ""
+    
+    echo "1) List available configurations"
+    echo "2) Download configuration file"
+    echo "0) Back to hardware menu"
+    echo ""
+    read -p "Select an option: " config_choice
+    
+    case $config_choice in
+        1) list_official_configs ;;
+        2) download_official_config ;;
+        0) hardware_config_menu ;;
+        *) echo -e "${RED}Invalid option${NC}"; sleep 2; browse_official_configs ;;
+    esac
+}
+
+# Function to list official configurations
+list_official_configs() {
+    show_header
+    echo -e "${BLUE}AVAILABLE KLIPPER CONFIGURATIONS${NC}"
+    echo "Fetching latest configurations from GitHub..."
+    echo ""
+    
+    # Check if curl and jq are available
+    if ! command -v curl &> /dev/null; then
+        echo -e "${RED}Error: curl is required but not installed${NC}"
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
+    
+    # Fetch and display configurations
+    local api_response=$(curl -s "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
+    
+    if [ -z "$api_response" ]; then
+        echo -e "${RED}Error: Could not fetch configurations from GitHub${NC}"
+        echo "Please check your internet connection."
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
+    
+    # Parse and display .cfg files
+    echo "Available printer configurations:"
+    echo ""
+    
+    local count=1
+    while read -r filename; do
+        if [[ "$filename" == *.cfg ]]; then
+            echo "$count) $filename"
+            count=$((count+1))
+        fi
+    done < <(echo "$api_response" | grep -o '"name":"[^"]*"' | cut -d'"' -f4 | sort)
+    
+    echo ""
+    read -p "Press Enter to continue..." dummy
+    browse_official_configs
+}
+
+# Function to download official configuration
+download_official_config() {
+    show_header
+    echo -e "${BLUE}DOWNLOAD KLIPPER CONFIGURATION${NC}"
+    echo "Enter the exact filename of the configuration you want to download"
+    echo "Example: printer-creality-ender3-v2-2020.cfg"
+    echo ""
+    
+    read -p "Configuration filename: " config_filename
+    
+    if [ -z "$config_filename" ]; then
+        echo -e "${RED}No filename provided${NC}"
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
+    
+    # Add .cfg extension if not provided
+    if [[ "$config_filename" != *.cfg ]]; then
+        config_filename="${config_filename}.cfg"
+    fi
+    
+    echo "Downloading $config_filename..."
+    
+    # Download the file
+    local download_url="https://raw.githubusercontent.com/Klipper3d/klipper/master/config/$config_filename"
+    local target_file="${KLIPPER_CONFIG}/$config_filename"
+    
+    # Backup existing file if it exists
+    if [ -f "$target_file" ]; then
+        echo "Backing up existing $config_filename..."
+        cp "$target_file" "${BACKUP_DIR}/${config_filename}.backup_${CURRENT_DATE}"
+    fi
+    
+    # Download the file
+    if curl -s -f "$download_url" -o "$target_file"; then
+        echo -e "${GREEN}Successfully downloaded $config_filename to ${KLIPPER_CONFIG}/${NC}"
+        echo ""
+        echo -e "${CYAN}Next Steps:${NC}"
+        echo "1. Review the downloaded configuration file"
+        echo "2. Add [include $config_filename] to your printer.cfg if needed"
+        echo "3. Modify settings to match your specific hardware"
+        echo "4. Restart Klipper service when ready"
+    else
+        echo -e "${RED}Error: Could not download $config_filename${NC}"
+        echo "Please check the filename and try again."
+    fi
+    
+    read -p "Press Enter to continue..." dummy
+    browse_official_configs
 }
 
 # Backup management menu
