@@ -87,7 +87,7 @@ KANT/
 KANT works with your Klipper configuration directory (typically `~/printer_data/config/`):
 
 - **printer.cfg** - Main configuration file (updated by KANT)
-- **macros/** - Directory containing macro configuration files
+- **macros.cfg** - Main configuration containing macros
 - **backups/** - Automatic backups of configuration changes
 
 ## Requirements
@@ -148,7 +148,7 @@ KANT works with your Klipper configuration directory (typically `~/printer_data/
 
 - Verify the include statement in printer.cfg: `[include macros/*.cfg]`
 - Check for syntax errors: `RESTART` in Klipper console
-- Review macro files in `~/printer_data/config/macros/`
+- Review macro file in `~/printer_data/config/macros.cfg`
 
 ## Contributing
 
