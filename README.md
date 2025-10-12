@@ -4,9 +4,9 @@
 
 A comprehensive utility to assist with Klipper 3D printer configuration and setup. KANT provides an interactive menu-driven interface to help you configure your printer quickly and correctly.
 
-## Version 1.2.0
+## Version 1.3.0
 
-**Last Updated:** 2025-10-11  
+**Last Updated:** 2025-10-12
 **Author:** ss1gohan13
 
 ## Features Overview
