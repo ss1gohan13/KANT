@@ -51,41 +51,41 @@ KANT has evolved into a comprehensive interactive menu system with 7 main catego
 ### 📦 **6. Software Management**
 Organized into specialized subcategories:
 
-#### **Core Software**
-- Kiauh installation and management
-- System updates
+- #### **Core Software**
+  - Kiauh installation and management
+  - System updates
 
-#### **LED & Visual Effects**
-- Klipper LED Effects installation/management
-- Status monitoring
+- #### **LED & Visual Effects**
+  - Klipper LED Effects installation/management
+  - Status monitoring
 
-#### **Input Shaping & Analysis**
-- Shake&Tune installation for advanced resonance analysis
-- ADXL345 support
+- #### **Input Shaping & Analysis**
+  - Shake&Tune installation for advanced resonance analysis
+  - ADXL345 support
 
-#### **Driver & Hardware Tuning**
-- TMC Autotune for optimal stepper performance
-- Hardware optimization
+- #### **Driver & Hardware Tuning**
+  - TMC Autotune for optimal stepper performance
+  - Hardware optimization
 
-#### **Touchscreen Interface**
-- KlipperScreen installation and configuration
-- Touch interface management
+- #### **Touchscreen Interface**
+  - KlipperScreen installation and configuration
+  - Touch interface management
 
-#### **Probe Systems**
-- Beacon probe support
-- Cartographer probe integration
-- Eddy-NG probe system
-- Multi-probe compatibility
+- #### **Probe Systems**
+  - Beacon probe support
+  - Cartographer probe integration
+  - Eddy-NG probe system
+  - Multi-probe compatibility
 
-#### **Calibration Tools**
-- Auto Z Calibration
-- Advanced calibration utilities
+- #### **Calibration Tools**
+  - Auto Z Calibration
+  - Advanced calibration utilities
 
-#### **CANBUS**
-- **Guided CANBUS Setup** - Partial automated setup process
-- Kernel compatibility checking
-- Network service configuration
-- Advanced troubleshooting options
+- #### **CANBUS**
+  - **Guided CANBUS Setup** - Partial automated setup process
+  - Kernel compatibility checking
+  - Network service configuration
+  - Advanced troubleshooting options
 
 ### 🗑️ **7. Uninstall**
 - Safe removal with configuration restoration
