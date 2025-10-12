@@ -11,7 +11,7 @@ KLIPPER_PATH="${HOME}/klipper"
 KLIPPER_SERVICE_NAME=klipper
 BACKUP_DIR="${KLIPPER_CONFIG}/backup"
 CURRENT_DATE=$(date +%Y%m%d_%H%M%S)
-VERSION="1.3.0"
+VERSION="1.3.1"
 
 # Default to menu mode - menu will show by default
 MENU_MODE=1
