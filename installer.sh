@@ -1839,19 +1839,60 @@ list_official_configs() {
         return
     fi
     
-    # Fetch and display configurations using pure bash (no jq required)
-    local api_response=$(curl -s "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
-    
-    if [ -z "$api_response" ]; then
-        echo -e "${RED}Error: Could not fetch configurations from GitHub${NC}"
-        echo "Please check your internet connection."
+    # Test basic connectivity first
+    echo "Testing GitHub connectivity..."
+    if curl -s --connect-timeout 10 "https://github.com" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ GitHub is reachable${NC}"
+    else
+        echo -e "${RED}✗ Cannot reach GitHub${NC}"
         read -p "Press Enter to continue..." dummy
         browse_official_configs
         return
     fi
     
-    # Debug: Show raw response (temporary - remove after testing)
-    echo -e "${YELLOW}Debug - Raw API response length: ${#api_response} characters${NC}"
+    # Fetch configurations with verbose error handling
+    echo "Fetching config list from GitHub API..."
+    local api_response
+    local http_code
+    
+    # Use a temporary file to capture both response and HTTP code
+    local temp_file="/tmp/klipper_configs_$$"
+    http_code=$(curl -s -w "%{http_code}" -o "$temp_file" \
+        "https://api.github.com/repos/Klipper3d/klipper/contents/config?ref=master" 2>/dev/null)
+    
+    if [ -f "$temp_file" ]; then
+        api_response=$(cat "$temp_file")
+        rm -f "$temp_file"
+    fi
+    
+    echo "HTTP Response Code: $http_code"
+    echo "Response Length: ${#api_response} characters"
+    
+    if [ "$http_code" != "200" ]; then
+        echo -e "${RED}Error: GitHub API returned HTTP $http_code${NC}"
+        if [ -n "$api_response" ]; then
+            echo "Response: ${api_response:0:200}..."
+        fi
+        echo ""
+        echo -e "${CYAN}Alternative: Browse configs manually at:${NC}"
+        echo "https://github.com/Klipper3d/klipper/tree/master/config"
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
+    
+    if [ -z "$api_response" ]; then
+        echo -e "${RED}Error: Empty response from GitHub API${NC}"
+        read -p "Press Enter to continue..." dummy
+        browse_official_configs
+        return
+    fi
+    
+    # Show first 300 characters for debugging
+    echo ""
+    echo -e "${YELLOW}Debug - First part of response:${NC}"
+    echo "${api_response:0:300}..."
+    echo ""
     
     # Parse JSON without jq - extract .cfg filenames
     echo "Available printer configurations:"
@@ -1860,26 +1901,12 @@ list_official_configs() {
     local count=1
     local found_configs=0
     
-    # Extract filenames using grep and sed
-    while read -r line; do
-        if [[ "$line" == *".cfg"* ]]; then
-            # Extract just the filename between quotes
-            filename=$(echo "$line" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\.cfg\)".*/\1/p')
-            if [ -n "$filename" ]; then
-                echo "$count) $filename"
-                count=$((count+1))
-                found_configs=1
-            fi
-        fi
-    done <<< "$api_response"
+    # Try multiple parsing methods
+    echo -e "${CYAN}Method 1: Direct grep${NC}"
+    echo "$api_response" | grep -o '"name":"[^"]*\.cfg"' | head -5
     
-    if [ $found_configs -eq 0 ]; then
-        echo -e "${YELLOW}No .cfg files found in the response.${NC}"
-        echo "This might be a temporary GitHub API issue."
-        echo ""
-        echo -e "${CYAN}Alternative: You can browse configs manually at:${NC}"
-        echo "https://github.com/Klipper3d/klipper/tree/master/config"
-    fi
+    echo -e "${CYAN}Method 2: sed extraction${NC}"
+    echo "$api_response" | sed -n 's/.*"name"[[:space:]]*:[[:space:]]*"\([^"]*\.cfg\)".*/\1/p' | head -5
     
     echo ""
     read -p "Press Enter to continue..." dummy
