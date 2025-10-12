@@ -80,7 +80,7 @@ Organized into specialized subcategories:
 - Advanced calibration utilities
 
 #### **CANBUS**
-- **Guided CANBUS Setup** - Complete automated setup process
+- **Guided CANBUS Setup** - Partial automated setup process
 - Kernel compatibility checking
 - Network service configuration
 - Advanced troubleshooting options
