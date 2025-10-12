@@ -6,11 +6,6 @@ A comprehensive utility to assist with Klipper 3D printer configuration and setu
 
 Please keep in mind this is work in progress. Please make sure to post issues. 
 
-## Version 1.3.0
-
-**Last Updated:** 2025-10-12
-**Author:** ss1gohan13
-
 ## Features Overview
 
 KANT has evolved into a comprehensive interactive menu system with 7 main categories:
@@ -110,6 +105,21 @@ Options:
   -u           Uninstall mode
   -l           Linear mode (skip interactive menu)
   -h           Show help message
+```
+
+## Update Moonraker.conf
+```bash
+[update_manager kant]
+type: git_repo
+path: ~/KANT
+origin: https://github.com/ss1gohan13/KANT.git
+primary_branch: main
+managed_services: klipper
+is_system_service: False
+install_script: installer.sh
+refresh_interval: 24
+info_tags:
+  desc=Klipper Assistant Navigation and Troubleshooting
 ```
 
 ## Usage
@@ -317,7 +327,12 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Changelog
 
-### **Version 1.3.0**
+## Version 1.3.1
+- Added moonraker update functions
+- Reorganized change log
+
+## Version 1.3.0
+
 - ##Public release
 - gramical/spelling corrections/updates on github
 
