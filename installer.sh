@@ -186,7 +186,7 @@ backup_existing_macros() {
 install_macros() {
     echo "Downloading and installing new macros to macros.cfg..."
     # Always download to macros.cfg regardless of what the user entered
-    curl -L https://raw.githubusercontent.com/ss1gohan13/SV08-Replacement-Macros/main/printer_data/config/macros.cfg -o "${KLIPPER_CONFIG}/macros.cfg"
+    curl -L https://raw.githubusercontent.com/ss1gohan13/KANT/main/printer_data/config/macros.cfg -o "${KLIPPER_CONFIG}/macros.cfg"
     # Verify download was successful
     if [ -s "${KLIPPER_CONFIG}/macros.cfg" ]; then
         echo -e "${GREEN}[OK]${NC} Macros file downloaded successfully"
