@@ -192,9 +192,26 @@ install_macros() {
         echo -e "${GREEN}[OK]${NC} Macros file downloaded successfully"
         echo "First few lines of downloaded file:"
         head -n 3 "${KLIPPER_CONFIG}/macros.cfg"
+        install_gcode_shell    # <-- call here, after verifying download succeeded
     else
         echo -e "${RED}[ERROR] Failed to download macros file. Please check your internet connection.${NC}"
         exit 1
+    fi
+}
+
+install_gcode_shell() {
+    # Check if already installed
+    if [ -d "${KLIPPER_CONFIG}/gcode_shell" ]; then
+        echo "gcode_shell already installed."
+        return
+    fi
+
+    echo "Installing gcode_shell..."
+    git clone https://github.com/kyleisah/gcode_shell.git "${KLIPPER_CONFIG}/gcode_shell"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}gcode_shell installed successfully in ${KLIPPER_CONFIG}/gcode_shell${NC}"
+    else
+        echo -e "${RED}Failed to install gcode_shell!${NC}"
     fi
 }
 
