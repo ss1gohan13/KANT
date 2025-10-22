@@ -6,9 +6,54 @@ A comprehensive utility to assist with Klipper 3D printer configuration and setu
 
 Please keep in mind this is work in progress. Please make sure to post issues. 
 
-## Features Overview
+## Changelog
 
-KANT has evolved into a comprehensive interactive menu system with 7 main categories:
+## Version 1.4.1
+
+- [Klipper Network Status now included with new macros for IP support](https://github.com/goopypanther/klipper_network_status)
+
+<details>
+<summary> Previous revisions </summary>
+
+## Version 1.4.0
+
+- Macros now install from the KANT repository (not SV08 macros)
+- gcode_shell is automatically installed alongside the macro suite for use of new macros
+- KAMP is no longer auto-installed with macros or print start macro; it is now only installed when explicitly selected from the menu
+- KAMP LiTe is now included with macros.cfg
+- Updated installer logic for improved clarity and modularity
+- Documentation and README updated to reflect these process changes
+
+## Version 1.3.1
+- Added moonraker update functions
+- Reorganized change log
+
+## Version 1.3.0
+
+- ##Public release
+- gramical/spelling corrections/updates on github
+
+### **Version 1.2.0**
+- Complete interactive menu system
+- Enhanced hardware configuration tools
+- Comprehensive software management
+- Advanced CAN bus setup with guided configuration
+- Improved backup and restore functionality
+- Full diagnostic suite
+- Modular plugin architecture
+- Enhanced Eddy NG integration
+- Stepper configuration wizard
+- Official Klipper config browser
+
+### **Previous Versions**
+- v1.1.x: Basic macro installation and configuration
+- v1.0.x: Initial release with core functionality
+
+</details>
+
+## :warning: Features Overview :warning:
+
+KANT has evolved into a comprehensive interactive menu system:
 
 ### 🔧 **1. Install Klipper Macros**
 - **Standard Klipper Macros** - Complete macro suite with web interface configuration
@@ -324,42 +369,6 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - **Issues & Questions**: [GitHub Issues](https://github.com/ss1gohan13/KANT/issues)
 - **Feature Requests**: [GitHub Discussions](https://github.com/ss1gohan13/KANT/discussions)
 - **Documentation**: This README and inline help
-
-## Changelog
-
-## Version 1.4.0
-
-- Macros now install from the KANT repository (not SV08 macros)
-- gcode_shell is automatically installed alongside the macro suite for use of new macros
-- KAMP is no longer auto-installed with macros or print start macro; it is now only installed when explicitly selected from the menu
-- KAMP LiTe is now included with macros.cfg
-- Updated installer logic for improved clarity and modularity
-- Documentation and README updated to reflect these process changes
-
-## Version 1.3.1
-- Added moonraker update functions
-- Reorganized change log
-
-## Version 1.3.0
-
-- ##Public release
-- gramical/spelling corrections/updates on github
-
-### **Version 1.2.0**
-- Complete interactive menu system
-- Enhanced hardware configuration tools
-- Comprehensive software management
-- Advanced CAN bus setup with guided configuration
-- Improved backup and restore functionality
-- Full diagnostic suite
-- Modular plugin architecture
-- Enhanced Eddy NG integration
-- Stepper configuration wizard
-- Official Klipper config browser
-
-### **Previous Versions**
-- v1.1.x: Basic macro installation and configuration
-- v1.0.x: Initial release with core functionality
 
 ---
 
