@@ -194,6 +194,7 @@ install_macros() {
         head -n 3 "${KLIPPER_CONFIG}/macros.cfg"
         install_gcode_shell    # Install gcode_shell first
         install_klipper_network_status   # Now install klipper_network_status immediately after
+        add_network_status_to_printer_cfg
     else
         echo -e "${RED}[ERROR] Failed to download macros file. Please check your internet connection.${NC}"
         exit 1
@@ -229,6 +230,28 @@ install_klipper_network_status() {
             echo -e "${RED}Cannot write to ${KLIPPER_CONFIG}. Check permissions!${NC}"
         fi
         return 1
+    fi
+}
+
+add_network_status_to_printer_cfg() {
+    local printer_cfg="${KLIPPER_CONFIG}/printer.cfg"
+    local backup_cfg="${BACKUP_DIR}/printer.cfg.network_status_${CURRENT_DATE}"
+
+    if [ ! -f "$printer_cfg" ]; then
+        echo -e "${YELLOW}[WARNING] printer.cfg not found at ${printer_cfg}${NC}"
+        return
+    fi
+
+    cp "$printer_cfg" "$backup_cfg"
+    echo "Created backup of printer.cfg at $backup_cfg"
+
+    # Only add if not already present
+    if grep -q '^\[network_status\]' "$printer_cfg"; then
+        echo "Found existing [network_status] block. No need to add another."
+    else
+        # Insert at the very top
+        sed -i '1i[network_status]\n' "$printer_cfg"
+        echo "Added [network_status] to the top of printer.cfg"
     fi
 }
 
