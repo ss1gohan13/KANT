@@ -327,6 +327,15 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 ## Changelog
 
+## Version 1.4.0
+
+- Macros now install from the KANT repository (not SV08 macros)
+- gcode_shell is automatically installed alongside the macro suite for use of new macros
+- KAMP is no longer auto-installed with macros or print start macro; it is now only installed when explicitly selected from the menu
+- KAMP LiTe is now included with macros.cfg
+- Updated installer logic for improved clarity and modularity
+- Documentation and README updated to reflect these process changes
+
 ## Version 1.3.1
 - Added moonraker update functions
 - Reorganized change log
