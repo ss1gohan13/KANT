@@ -692,9 +692,9 @@ install_core_macros_menu() {
                 check_and_update_printer_cfg
             fi
             
-            # Then install KAMP (required by Print_Start Macro)
-            echo "Installing KAMP (required for A Better Print_Start Macro)..."
-            install_kamp
+            # # Then install KAMP (required by Print_Start Macro)
+            # echo "Installing KAMP (required for A Better Print_Start Macro)..."
+            # install_kamp
             
             # Install Print_Start Macro
             echo "Installing A Better Print_Start Macro..."
@@ -755,7 +755,7 @@ additional_features_menu() {
     case $feature_choice in
         1)
             echo "Installing A Better Print_Start Macro..."
-            install_kamp
+            # install_kamp
             curl -sSL https://raw.githubusercontent.com/ss1gohan13/A-better-print_start-macro/main/install_start_print.sh | bash
             echo -e "${GREEN}Print_Start macro installed successfully!${NC}"
             read -p "Press Enter to continue..." dummy
@@ -3024,7 +3024,7 @@ else
     
     if [[ "$install_print_start" =~ ^[Yy]$ ]]; then
         echo "Installing KAMP and A Better Print_Start Macro..."
-        install_kamp
+        # install_kamp
         curl -sSL https://raw.githubusercontent.com/ss1gohan13/A-better-print_start-macro/main/install_start_print.sh | bash
         echo ""
         echo -e "${GREEN}Print_Start macro and KAMP have been installed!${NC}"
