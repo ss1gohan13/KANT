@@ -794,6 +794,9 @@ install_core_macros_menu() {
             curl -sSL https://raw.githubusercontent.com/ss1gohan13/A-better-print_start-macro/main/install_start_print.sh | bash
 
             add_max_extrude_cross_section_to_extruder
+            add_firmware_retraction_to_printer_cfg
+
+            add_max_extrude_cross_section_to_extruder
             
             start_klipper
             echo -e "${GREEN}A Better Print_Start Macro installed successfully!${NC}"
@@ -852,6 +855,9 @@ additional_features_menu() {
             echo "Installing A Better Print_Start Macro..."
             # install_kamp
             curl -sSL https://raw.githubusercontent.com/ss1gohan13/A-better-print_start-macro/main/install_start_print.sh | bash
+
+            add_max_extrude_cross_section_to_extruder
+            add_firmware_retraction_to_printer_cfg
 
             add_max_extrude_cross_section_to_extruder
             
@@ -3124,6 +3130,8 @@ else
         echo "Installing KAMP and A Better Print_Start Macro..."
         # install_kamp
         curl -sSL https://raw.githubusercontent.com/ss1gohan13/A-better-print_start-macro/main/install_start_print.sh | bash
+        add_max_extrude_cross_section_to_extruder
+        add_firmware_retraction_to_printer_cfg
         echo ""
         echo -e "${GREEN}Print_Start macro and KAMP have been installed!${NC}"
         echo "Please visit https://github.com/ss1gohan13/A-better-print_start-macro for instructions on configuring your slicer settings."
