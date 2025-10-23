@@ -8,12 +8,16 @@ Please keep in mind this is work in progress. Please make sure to post issues.
 
 ## Changelog
 
-## Version 1.4.1
+## Version 1.4.2
 
-- [Klipper Network Status now included with new macros for IP support](https://github.com/goopypanther/klipper_network_status)
+- [firmware retraction] now added to printer.cfg when start print macro installed due to KAMP LiTe integreation
 
 <details>
 <summary> Previous revisions </summary>
+
+## Version 1.4.1
+
+- [Klipper Network Status now included with new macros for IP support](https://github.com/goopypanther/klipper_network_status)
 
 ## Version 1.4.0
 
