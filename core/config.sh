@@ -3,7 +3,7 @@
 # Contains all configuration variables and constants
 
 # Script Info
-VERSION="1.4.2"
+VERSION="1.5.0"
 REPO_URL="https://github.com/ss1gohan13/KANT"
 
 # Default paths
