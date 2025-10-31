@@ -8,12 +8,17 @@ Please keep in mind this is work in progress. Please make sure to post issues.
 
 ## Changelog
 
-## Version 1.4.2
+## Version 1.5.0
 
-- [firmware retraction] now added to printer.cfg when start print macro installed due to KAMP LiTe integreation
+- installer script has been redsigned for easier updates and maintenance
+- bug fix: numpy installation - apt update is performed then numpy is downloaded and then installed
 
 <details>
 <summary> Previous revisions </summary>
+
+## Version 1.4.2
+
+- [firmware retraction] now added to printer.cfg when start print macro installed due to KAMP LiTe integreation
 
 ## Version 1.4.1
 
