@@ -184,7 +184,7 @@ When you run `./installer.sh`, you'll see the main menu:
 
 ```
 ===============================================================================
-    Klipper Assistant Navigation and Troubleshooting (KANT) v1.3.0
+    Klipper Assistant Navigation and Troubleshooting (KANT) v1.5.0
 ===============================================================================
 
 MAIN MENU
@@ -354,9 +354,34 @@ uname -a
 
 ```
 KANT/
-├── installer.sh         # Main installer and menu system
-├── README.md            # This documentation
-└── LICENSE              # GPL v3.0 License
+├── installer.sh
+├── core/
+│   ├── config.sh
+│   └── utils.sh
+├── modules/
+│   ├── macro_installer.sh
+│   ├── hardware_config.sh
+│   ├── software_management.sh
+│   ├── canbus.sh
+│   ├── diagnostics.sh
+│   ├── backups.sh
+│   ├── calibration.sh
+│   └── plugins/
+│       ├── klipper_network_status.sh
+│       ├── gcode_shell.sh
+│       ├── kamp.sh
+│       ├── numpy_adxl.sh
+│       ├── eddy_ng.sh
+│       ├── firmware_retraction.sh
+│       ├── force_move.sh
+│       └── max_extrude_cross_section.sh
+└── menus/
+    ├── main_menu.sh
+    ├── hardware_menu.sh
+    ├── software_menu.sh
+    ├── diagnostics_menu.sh
+    ├── backup_menu.sh
+    └── additional_features_menu.sh
 ```
 
 ## Contributing
