@@ -29,6 +29,7 @@ source "${SCRIPT_DIR}/modules/plugins/eddy_ng.sh"
 source "${SCRIPT_DIR}/modules/plugins/firmware_retraction.sh"
 source "${SCRIPT_DIR}/modules/plugins/force_move.sh"
 source "${SCRIPT_DIR}/modules/plugins/max_extrude_cross_section.sh"
+source "${SCRIPT_DIR}/modules/klipper_installer.sh"
 
 # Source all menu modules
 source "${SCRIPT_DIR}/menus/main_menu.sh"
@@ -37,6 +38,7 @@ source "${SCRIPT_DIR}/menus/software_menu.sh"
 source "${SCRIPT_DIR}/menus/diagnostics_menu.sh"
 source "${SCRIPT_DIR}/menus/backup_menu.sh"
 source "${SCRIPT_DIR}/menus/additional_features_menu.sh"
+source "${SCRIPT_DIR}/menus/klipper_install_menu.sh"
 
 # Parse command line arguments
 while getopts "c:s:ulh" arg; do
