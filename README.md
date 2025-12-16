@@ -64,12 +64,20 @@ Please keep in mind this is work in progress. Please make sure to post issues.
 
 KANT has evolved into a comprehensive interactive menu system:
 
-### 🔧 **1. Install Klipper Macros**
+### 🚀 **1. Install Klipper & Core Components**
+- **Klipper** - 3D printer firmware installation
+- **Moonraker** - Web API for Klipper
+- **Mainsail** - Modern web interface for Klipper
+- **Fluidd** - Lightweight web interface for Klipper
+- **Mainsail-Config** - Configuration files for Mainsail
+- **Fluidd-Config** - Configuration files for Fluidd
+
+### 🔧 **2. Install Klipper Macros**
 - **Standard Klipper Macros** - Complete macro suite with web interface configuration
 - **A Better Print_Start Macro** - Advanced start sequence with KAMP integration
 - **A Better End Print Macro** - Enhanced end print functionality
 
-### ⚙️ **2. Hardware Configuration Utilities**
+### ⚙️ **3. Hardware Configuration Utilities**
 - **MCU ID Management** - Detect, configure, and update MCU serial IDs and CAN bus UUIDs
 - **CAN Bus Support** - Complete CAN bus device scanning and configuration
 - **Official Klipper Configurations** - Browse and download official example configs
@@ -78,7 +86,7 @@ KANT has evolved into a comprehensive interactive menu system:
 - **Force Move Configuration** - Enable manual motor movement
 - **Eddy NG Integration** - Enable tap functionality and rapid bed mesh scanning
 
-### 🚀 **3. Additional Features & Extensions**
+### 🚀 **4. Additional Features & Extensions**
 - **KAMP Installation** - Klipper Adaptive Meshing and Purging
 - **Numpy for ADXL** - Install numpy for input shaping measurements
 - **Crowsnest** - Webcam streaming solution
@@ -86,18 +94,18 @@ KANT has evolved into a comprehensive interactive menu system:
 - **PID Tuning Assistant** - Guided hotend PID calibration
 - **E-Steps Calibration Helper** - Step-by-step extruder calibration
 
-### 💾 **4. Backup Management**
+### 💾 **5. Backup Management**
 - **List All Backups** - View all configuration backups with details
 - **Restore from Backup** - Select and restore any previous configuration
 - **Clean Old Backups** - Remove backups older than specified days
 
-### 🔍 **5. Diagnostics & Troubleshooting**
+### 🔍 **6. Diagnostics & Troubleshooting**
 - **Klipper Status Check** - Service status and health monitoring
 - **Log Viewer** - View recent logs and filter for errors
 - **Configuration Verification** - Validate setup and includes
 - **Full System Diagnostics** - Comprehensive system health check
 
-### 📦 **6. Software Management**
+### 📦 **7. Software Management**
 Organized into specialized subcategories:
 
 - #### **Core Software**
@@ -136,7 +144,7 @@ Organized into specialized subcategories:
   - Network service configuration
   - Advanced troubleshooting options
 
-### 🗑️ **7. Uninstall**
+### 🗑️ **8. Uninstall**
 - Safe removal with configuration restoration
 - Automatic backup before uninstall
 
@@ -188,13 +196,14 @@ When you run `./installer.sh`, you'll see the main menu:
 ===============================================================================
 
 MAIN MENU
-1) Install Klipper Macros
-2) Hardware Configuration Utilities  
-3) Additional Features & Extensions
-4) Backup Management
-5) Diagnostics & Troubleshooting
-6) Software Management
-7) Uninstall
+1) Install Klipper & Core Components
+2) Install Klipper Macros
+3) Hardware Configuration Utilities  
+4) Additional Features & Extensions
+5) Backup Management
+6) Diagnostics & Troubleshooting
+7) Software Management
+8) Uninstall
 0) Exit
 ```
 
@@ -411,11 +420,12 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## Quick Reference
 
 ### **Most Common Tasks**
-1. **Install Basic Macros**: Menu → 1 → 1
-2. **Configure MCU**: Menu → 2 → 1  
-3. **Check System Health**: Menu → 5 → 4
-4. **Install Print Start Macro**: Menu → 1 → 2
-5. **Setup CAN Bus**: Menu → 6 → 8 → 1
-6. **Backup Configuration**: Menu → 4 → 1
+1. **Install Klipper**: Menu → 1 → 1
+2. **Install Basic Macros**: Menu → 2 → 1
+3. **Configure MCU**: Menu → 3 → 1  
+4. **Check System Health**: Menu → 6 → 4
+5. **Install Print Start Macro**: Menu → 2 → 2
+6. **Setup CAN Bus**: Menu → 7 → 8 → 1
+7. **Backup Configuration**: Menu → 5 → 1
 
 For detailed instructions on any feature, navigate through the interactive menu system or refer to the relevant section in this documentation.

@@ -5,25 +5,27 @@
 show_main_menu() {
     show_header
     echo -e "${BLUE}MAIN MENU${NC}"
-    echo "1) Install Klipper Macros"
-    echo "2) Hardware Configuration Utilities"
-    echo "3) Additional Features & Extensions"
-    echo "4) Backup Management"
-    echo "5) Diagnostics & Troubleshooting"
-    echo "6) Software Management"
-    echo "7) Uninstall"
+    echo "1) Install Klipper & Core Components"
+    echo "2) Install Klipper Macros"
+    echo "3) Hardware Configuration Utilities"
+    echo "4) Additional Features & Extensions"
+    echo "5) Backup Management"
+    echo "6) Diagnostics & Troubleshooting"
+    echo "7) Software Management"
+    echo "8) Uninstall"
     echo "0) Exit"
     echo ""
     read -p "Select an option: " menu_choice
     
     case $menu_choice in
-        1) install_core_macros_menu ;;
-        2) hardware_config_menu ;;
-        3) additional_features_menu ;;
-        4) manage_backups ;;
-        5) diagnostics_menu ;;
-        6) software_management_menu ;;
-        7) uninstall_menu ;;
+        1) klipper_install_menu ;;
+        2) install_core_macros_menu ;;
+        3) hardware_config_menu ;;
+        4) additional_features_menu ;;
+        5) manage_backups ;;
+        6) diagnostics_menu ;;
+        7) software_management_menu ;;
+        8) uninstall_menu ;;
         0) exit 0 ;;
         *) echo -e "${RED}Invalid option${NC}"; sleep 2; show_main_menu ;;
     esac
